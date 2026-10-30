@@ -55,7 +55,7 @@ Pendiente para una etapa posterior:
 - Confirmar modalidad, ubicación, accesibilidad, canales, horarios y plazos de respuesta.
 - Definir destinos de contacto y condiciones de cambios/cancelaciones.
 - Implementar validación, consentimiento que corresponda, envío seguro, protección antispam, correo y política de almacenamiento.
-- Sustituir el aviso pendiente por el texto legal aprobado; no se inventaron cláusulas.
+- El aviso de privacidad contiene una propuesta de demostración del 30 de octubre de 2026, con identidad, domicilio y correo ficticios identificados en la página. Antes de su uso operativo, confirmar responsable, canales ARCO, proveedores, transferencias, consentimiento, atención a menores y plazos de conservación; completar la revisión jurídica y sustituir los datos de ejemplo. El formulario sigue sin enviar ni guardar información.
 - Resolver publicación y dominio. Los metadatos `noindex, nofollow` son intencionales durante la presentación local.
 
 ## Verificación
