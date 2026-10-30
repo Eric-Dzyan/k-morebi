@@ -7,6 +7,7 @@
 
   function setMenu(open, returnFocus = false) {
     navigation.classList.toggle('open', open);
+    navigation.inert = mobile.matches && !open;
     toggle.setAttribute('aria-expanded', String(open));
     toggle.setAttribute('aria-label', open ? 'Cerrar menú' : 'Abrir menú');
     if (returnFocus) toggle.focus();
@@ -14,6 +15,7 @@
 
   if (toggle && navigation) {
     document.body.classList.add('menu-ready');
+    setMenu(false);
     toggle.addEventListener('click', () => setMenu(toggle.getAttribute('aria-expanded') !== 'true'));
     navigation.addEventListener('click', event => {
       if (event.target.closest('a')) setMenu(false);
@@ -39,6 +41,49 @@
   });
 
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  // Keep native details semantics and no-JS behavior; animate only a person's action.
+  const disclosureStates = new Map();
+  document.querySelectorAll('.faq details').forEach(details => {
+    const summary = details.querySelector('summary');
+    const state = { expanded: details.open, animation: null };
+    disclosureStates.set(details, state);
+    function settle() {
+      state.animation = null;
+      details.open = state.expanded;
+      details.style.removeProperty('overflow');
+    }
+    state.settle = settle;
+    summary.addEventListener('click', event => {
+      if (reducedMotion.matches || !details.animate) return;
+      event.preventDefault();
+      const start = details.getBoundingClientRect().height;
+      state.animation?.cancel();
+      state.expanded = !state.expanded;
+      details.open = true;
+      const style = getComputedStyle(details);
+      const closedHeight = summary.getBoundingClientRect().height
+        + parseFloat(style.paddingTop) + parseFloat(style.paddingBottom)
+        + parseFloat(style.borderTopWidth) + parseFloat(style.borderBottomWidth);
+      const end = state.expanded ? details.getBoundingClientRect().height : closedHeight;
+      details.style.overflow = 'hidden';
+      state.animation = details.animate(
+        [{ height: `${start}px` }, { height: `${end}px` }],
+        { duration: 280, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' }
+      );
+      state.animation.onfinish = settle;
+    });
+    details.addEventListener('toggle', () => {
+      if (!state.animation) state.expanded = details.open;
+    });
+  });
+  reducedMotion.addEventListener('change', event => {
+    if (!event.matches) return;
+    disclosureStates.forEach(state => {
+      state.animation?.cancel();
+      state.settle();
+    });
+  });
   const pending = new Map();
   function revealAll() {
     pending.forEach((timer, element) => {
@@ -61,7 +106,7 @@
     }, { threshold: 0.04 });
     document.querySelectorAll('[data-reveal]').forEach(element => {
       if (element.getBoundingClientRect().top < window.innerHeight) return;
-      // Subtle opacity only, so text remains readable even before observation.
+      // Keep text readable even before the entrance is triggered.
       element.classList.add('reveal-pending');
       pending.set(element, setTimeout(() => element.classList.remove('reveal-pending'), 6000));
       observer.observe(element);

@@ -49,12 +49,8 @@
     control.hidden = !ready || motion.matches;
     control.textContent = paused ? "Reanudar animación" : "Pausar animación";
     if (!running()) {
-      slides.forEach((slide) =>
-        slide
-          .querySelector("img")
-          .getAnimations()
-          .forEach((animation) => animation.pause()),
-      );
+      // Include the crossfade so pausing freezes the whole photograph.
+      stage.getAnimations({ subtree: true }).forEach((animation) => animation.pause());
       if (motion.matches) {
         slides.forEach((slide) =>
           slide
@@ -67,12 +63,7 @@
       return;
     }
     if (!zoom) startZoom();
-    slides.forEach((slide) =>
-      slide
-        .querySelector("img")
-        .getAnimations()
-        .forEach((animation) => animation.play()),
-    );
+    stage.getAnimations({ subtree: true }).forEach((animation) => animation.play());
     timer = setTimeout(advance, interval);
   }
 
