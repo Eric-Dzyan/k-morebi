@@ -10,5 +10,11 @@
 </footer>
 <script src="assets/vendor/bootstrap/bootstrap.min.js" defer></script>
 <script src="assets/js/site.js" defer></script>
+<?php if ($page === 'index'): ?>
+<script src="assets/js/hero-slideshow.js?v=<?= filemtime(__DIR__ . '/../assets/js/hero-slideshow.js') ?>" defer></script>
+<?php endif; ?>
+<?php if ($page !== 'index' && $page !== 'aviso-de-privacidad'): ?>
+<script src="assets/js/hero-zoom.js?v=<?= filemtime(__DIR__ . '/../assets/js/hero-zoom.js') ?>" defer></script>
+<?php endif; ?>
 </body>
 </html>

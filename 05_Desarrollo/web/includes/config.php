@@ -32,7 +32,7 @@ function e(string $value): string {
     return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
 }
 
-function photo(string $name, string $alt = '', bool $priority = false): void {
+function photo(string $name, string $alt = '', bool $priority = false, bool $animated = false): void {
     $sizes = '(max-width: 760px) 100vw, 60vw';
     $width = $name === 'pasaje-de-luz' ? 1024 : 1536;
     $height = $name === 'pasaje-de-luz' ? 1536 : 1024;
@@ -41,8 +41,12 @@ function photo(string $name, string $alt = '', bool $priority = false): void {
         $height = 941;
     }
     // Original sources are preserved; never upscale the web derivatives.
-    $candidates = 'assets/images/' . e($name) . '-640.webp 640w, assets/images/' . e($name) . '-1280.webp ' . min(1280, $width) . 'w';
-    if ($width > 1280) $candidates .= ', assets/images/' . e($name) . '-1920.webp ' . $width . 'w';
+    $hq = $animated && is_file(__DIR__ . '/../assets/images/' . $name . '-hq.webp');
+    $medium = $hq && $width <= 1280 ? '-hq.webp ' : '-1280.webp ';
+    $candidates = 'assets/images/' . e($name) . '-640.webp 640w, assets/images/' . e($name) . $medium . min(1280, $width) . 'w';
+    if ($width > 1280) $candidates .= ', assets/images/' . e($name) . ($hq ? '-hq.webp ' : '-1920.webp ') . $width . 'w';
+    // Animated cover images need enough pixels for their cropped height as well as their width.
+    if ($animated) $sizes = '(max-width: 760px) 100vw, ' . $width . 'px';
     echo '<img class="photo" src="assets/images/' . e($name) . '-1280.webp" srcset="' . $candidates . '" sizes="' . $sizes . '" width="' . $width . '" height="' . $height . '" alt="' . e($alt) . '" ' . ($priority ? 'fetchpriority="high" loading="eager"' : 'loading="lazy"') . ' decoding="async">';
 }
 
@@ -54,7 +58,7 @@ function paragraphs(array $block): void {
 
 function editorial_hero(array $block, string $label, string $image): void { ?>
 <section class="hero editorial-hero">
-    <figure class="hero-image"><?php photo($image, 'Luz natural, vegetación y materiales cálidos', true); ?></figure>
+    <figure class="hero-image hero-image--zoom" data-hero-zoom><?php photo($image, 'Luz natural, vegetación y materiales cálidos', true, true); ?></figure>
     <div class="hero-panel">
         <p class="eyebrow"><?= e($label) ?></p>
         <h1><?= e($block['heading']) ?></h1>

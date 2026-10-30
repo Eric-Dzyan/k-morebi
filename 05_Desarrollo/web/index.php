@@ -5,7 +5,11 @@ require __DIR__ . '/includes/header.php';
 ?>
 <main id="principal" tabindex="-1">
 <section class="hero">
-    <figure class="hero-image"><?php photo("k-morebi-escucha-primera-sesion-v01", "Luz natural filtrándose entre árboles en un espacio sereno", true); ?></figure>
+    <figure class="hero-image hero-slideshow" data-hero-slideshow aria-hidden="true">
+        <div class="hero-slide is-active"><?php photo("k-morebi-escucha-primera-sesion-v01", "", true, true); ?></div>
+        <div class="hero-slide"><?php photo("k-morebi-hero-acompanamiento-v01", "", false, true); ?></div>
+    </figure>
+    <button class="hero-motion-toggle" type="button" data-hero-motion hidden>Pausar animación</button>
     <div class="hero-panel">
         <p class="eyebrow">Psicoterapia integral</p>
         <h1><span>Un espacio para ti,</span> <span>incluso cuando no sabes</span> <span>por dónde empezar.</span></h1>
